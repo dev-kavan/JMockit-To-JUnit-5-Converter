@@ -1,0 +1,89 @@
+import mockit.*;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
+
+public class AnimalTest {
+
+    @Tested
+    Animal animal;
+
+    @Injectable
+    Food food;
+
+    @Test
+    public void testMakeSound() {
+        new Expectations(animal) {{
+            animal.makeSound(); result = "meow";
+            times = 1; // Expect makeSound to be called once
+        }};
+
+        String sound = animal.makeSound();
+        assertEquals("meow", sound);
+
+        new Verifications() {{
+            animal.makeSound(); times = 1;
+        }};
+    }
+
+    @Test
+    public void testEat() {
+        new Expectations() {{
+            food.toString(); result = "Nutritious food";
+        }};
+
+        animal.eat(food);
+
+        new Verifications() {{
+            animal.eat((Food) any); times = 1; // Verify that eat is called with any Food object
+        }};
+    }
+
+    @Test
+    public void testSleep() {
+        new Expectations(animal) {{
+            animal.sleep();
+            times = 2; // Expect sleep to be called twice
+        }};
+
+        animal.sleep();
+        animal.sleep();
+
+        new Verifications() {{
+            animal.sleep(); times = 2;
+        }};
+    }
+
+    @Test
+    public void testWakeUp() {
+        new Expectations(animal) {{
+            animal.wakeUp(); minTimes = 1; // Expect wakeUp to be called at least once
+        }};
+
+        animal.wakeUp();
+        animal.wakeUp(); // Called twice
+
+        new Verifications() {{
+            animal.wakeUp(); times = 2; // Verify wakeUp is called exactly twice
+        }};
+    }
+
+    @Test
+    public void testMove() {
+        new Expectations(animal) {{
+            animal.move();
+            result = new Delegate() {
+                @SuppressWarnings("unused")
+                void delegate() {
+                    System.out.println("Animal is moving");
+                }
+            };
+        }};
+
+        animal.move();
+
+        new Verifications() {{
+            animal.move(); times = 1;
+        }};
+    }
+}
